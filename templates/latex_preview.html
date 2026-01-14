@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LaTeX Preview | PDF Manager</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="sidebar">
+            <div class="logo">
+                <i class="fas fa-file-pdf"></i>
+                <h1>PDF Manager</h1>
+            </div>
+            
+            <div class="user-info">
+                <div class="avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="user-details">
+                    <span class="username">{{ current_user.username }}</span>
+                    <a href="{{ url_for('auth.logout') }}" class="logout">Logout</a>
+                </div>
+            </div>
+            
+            <nav class="nav-links">
+    <a href="{{ url_for('upload.index') }}"><i class="fas fa-home"></i> Dashboard</a>
+    <a href="{{ url_for('upload.view_history') }}"><i class="fas fa-history"></i> History</a>
+    <a href="{{ url_for('auth.settings') }}"><i class="fas fa-cog"></i> Settings</a>
+            </nav>
+        </div>
+        
+        <div class="main-content">
+            <div class="latex-header">
+                <h2>LaTeX Preview</h2>
+                <p>Generated from: {{ pdf_filename }}</p>
+                
+                <div class="action-buttons">
+                    <a href="{{ url_for('upload.download_latex', filename=filename) }}" class="btn-download">
+                        <i class="fas fa-download"></i> Download .tex File
+                    </a>
+                    <a href="{{ url_for('upload.view_results', filename=pdf_filename.replace('.pdf', '.json')) }}" class="btn-back">
+                        <i class="fas fa-arrow-left"></i> Back to Results
+                    </a>
+                </div>
+            </div>
+            
+            <div class="latex-preview-container">
+                <div class="latex-meta">
+                    <div class="meta-item">
+                        <i class="fas fa-file-pdf"></i>
+                        <span>Original PDF: {{ pdf_filename }}</span>
+                    </div>
+                    <div class="meta-item">
+                        <i class="fas fa-file-code"></i>
+                        <span>LaTeX File: {{ filename }}</span>
+                    </div>
+                </div>
+                
+                <div class="latex-content">
+                    <pre><code class="language-tex">{{ latex_content }}</code></pre>
+                </div>
+            </div>
+            
+            <div class="latex-actions">
+                
+                <a href="https://www.overleaf.com/docs" target="_blank" class="btn-overleaf">
+                    <i class="fab fa-latex"></i> Open in Overleaf
+                </a>
+            </div>
+        </div>
+    </div>
+
+
+</body>
+</html>

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Results | PDF Manager</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="sidebar">
+            <div class="logo">
+                <i class="fas fa-file-pdf"></i>
+                <h1>PDF Manager</h1>
+            </div>
+            
+            <div class="user-info">
+                <div class="avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="user-details">
+                    <span class="username">{{ user }}</span>
+                    <a href="{{ url_for('auth.logout') }}" class="logout">Logout</a>
+                </div>
+            </div>
+            
+            <nav class="nav-links">
+                <a href="{{ url_for('upload.index') }}" class="active"><i class="fas fa-home"></i> Dashboard</a>
+                <a href="#"><i class="fas fa-history"></i> History</a>
+                <a href="#"><i class="fas fa-cog"></i> Settings</a>
+            </nav>
+        </div>
+        
+        <div class="main-content">
+            <div class="results-header">
+                <h2>PDF Analysis Results</h2>
+                <p>Processed: {{ filename }}</p>
+            </div>
+            
+            <div class="results-section">
+                <div class="structure-group">
+                    <h3><i class="fas fa-heading"></i> Newsession (Largest Font)</h3>
+                    <div class="structure-content">
+                        {% for text in structure.newsession %}
+                        <div class="structure-item newsession">
+                            <p>{{ text }}</p>
+                        </div>
+                        {% else %}
+                        <p class="no-items">No newsession elements found</p>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <div class="structure-group">
+                    <h3><i class="fas fa-heading"></i> Subsession (Medium Font)</h3>
+                    <div class="structure-content">
+                        {% for text in structure.subsession %}
+                        <div class="structure-item subsession">
+                            <p>{{ text }}</p>
+                        </div>
+                        {% else %}
+                        <p class="no-items">No subsession elements found</p>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <div class="structure-group">
+                    <h3><i class="fas fa-align-left"></i> Content (Regular Font)</h3>
+                    <div class="structure-content">
+                        {% for text in structure.content %}
+                        <div class="structure-item content">
+                            <p>{{ text }}</p>
+                        </div>
+                        {% else %}
+                        <p class="no-items">No content elements found</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="raw-data-section">
+                <h3><i class="fas fa-code"></i> Raw Segments</h3>
+                <div class="raw-data-container">
+                    <table class="segments-table">
+                        <thead>
+                            <tr>
+                                <th>Font Size</th>
+                                <th>Text Content</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for segment in segments %}
+                            <tr>
+                                <td class="font-size">{{ segment.size|round(1) }}</td>
+                                <td class="text-content">{{ segment.text }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- LaTeX Generation Settings Form -->
+            <div class="latex-config">
+                <h3>LaTeX Generation Settings</h3>
+                <form method="POST" action="{{ url_for('upload.generate_latex', filename=filename.replace('.json', '.pdf')) }}">
+                    <div class="form-group">
+                        <label for="section-threshold">Section Font Size (≥ pt):</label>
+                        <input type="number" id="section-threshold" name="section_threshold" min="10" max="50" step="0.1" value="28">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="subsection-threshold">Subsection Font Size (≥ pt):</label>
+                        <input type="number" id="subsection-threshold" name="subsection_threshold" min="10" max="50" step="0.1" value="18">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="content-threshold">Content Font Size (&lt; pt):</label>
+                        <input type="number" id="content-threshold" name="content_threshold" min="8" max="20" step="0.1" value="12">
+                    </div>
+                    
+                    <button type="submit" class="btn-generate">
+                        <i class="fas fa-file-code"></i> Generate LaTeX
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Make text content expandable on hover
+        document.querySelectorAll('.text-content').forEach(cell => {
+            cell.addEventListener('mouseenter', function() {
+                this.style.whiteSpace = 'normal';
+                this.style.overflow = 'visible';
+                this.style.position = 'relative';
+                this.style.zIndex = '100';
+                this.style.background = 'white';
+                this.style.boxShadow = '0 0 10px rgba(0,0,0,0.1)';
+            });
+            
+            cell.addEventListener('mouseleave', function() {
+                this.style.whiteSpace = 'nowrap';
+                this.style.overflow = 'hidden';
+                this.style.textOverflow = 'ellipsis';
+                this.style.position = 'static';
+                this.style.zIndex = 'auto';
+                this.style.background = 'transparent';
+                this.style.boxShadow = 'none';
+            });
+        });
+    </script>
+</body>
+</html>

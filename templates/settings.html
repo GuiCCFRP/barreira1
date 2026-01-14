@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Settings | PDF Manager</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="sidebar">
+            <div class="logo">
+                <i class="fas fa-file-pdf"></i>
+                <h1>PDF Manager</h1>
+            </div>
+            
+            <div class="user-info">
+                <div class="avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="user-details">
+                    <span class="username">{{ current_user.username }}</span>
+                    <a href="{{ url_for('auth.logout') }}" class="logout">Logout</a>
+                </div>
+            </div>
+            
+            <nav class="nav-links">
+                <a href="{{ url_for('upload.index') }}"><i class="fas fa-home"></i> Dashboard</a>
+                <a href="{{ url_for('upload.history') }}"><i class="fas fa-history"></i> History</a>
+                <a href="{{ url_for('auth.settings') }}" class="active"><i class="fas fa-cog"></i> Settings</a>
+            </nav>
+        </div>
+        
+        <div class="main-content">
+            <div class="settings-header">
+                <h2>Account Settings</h2>
+                <p>Manage your account information and preferences</p>
+            </div>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="flash-messages">
+                        {% for category, message in messages %}
+                            <div class="flash {{ category }}">{{ message }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+            <div class="settings-container">
+                <div class="settings-section">
+                    <h3><i class="fas fa-user"></i> Profile Information</h3>
+                    <form class="settings-form" method="POST" action="{{ url_for('auth.update_profile') }}">
+                        <div class="form-group">
+                            <label for="username">Username</label>
+                            <input type="text" id="username" name="username" value="{{ current_user.username }}" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" name="email" value="{{ current_user.email }}">
+                        </div>
+                        
+                        <button type="submit" class="btn-save">
+                            <i class="fas fa-save"></i> Save Changes
+                        </button>
+                    </form>
+                </div>
+                
+                <div class="settings-section">
+                    <h3><i class="fas fa-lock"></i> Password</h3>
+                    <form class="settings-form" method="POST" action="{{ url_for('auth.change_password') }}">
+                        <div class="form-group">
+                            <label for="current_password">Current Password</label>
+                            <input type="password" id="current_password" name="current_password" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="new_password">New Password</label>
+                            <input type="password" id="new_password" name="new_password" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="confirm_password">Confirm New Password</label>
+                            <input type="password" id="confirm_password" name="confirm_password" required>
+                        </div>
+                        
+                        <button type="submit" class="btn-save">
+                            <i class="fas fa-key"></i> Change Password
+                        </button>
+                    </form>
+                </div>
+                
+                <div class="settings-section danger-zone">
+                    <h3><i class="fas fa-exclamation-triangle"></i> Danger Zone</h3>
+                    <div class="danger-actions">
+                        <button class="btn-delete-account" id="delete-account-btn">
+                            <i class="fas fa-trash"></i> Delete Account
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Confirm account deletion
+        document.getElementById('delete-account-btn').addEventListener('click', function() {
+            if (confirm('Are you sure you want to delete your account? This action is permanent and cannot be undone.')) {
+                window.location.href = "{{ url_for('auth.delete_account') }}";
+            }
+        });
+    </script>
+</body>
+</html>
